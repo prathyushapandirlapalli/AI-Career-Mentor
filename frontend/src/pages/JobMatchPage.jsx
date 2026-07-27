@@ -1,0 +1,72 @@
+import React, { useState, useEffect } from 'react';
+import { resumeAPI } from '../services/api';
+import { Crosshair, Briefcase, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
+
+const JobMatchPage = () => {
+  const [analyses, setAnalyses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalyses = async () => {
+      try {
+        const res = await resumeAPI.getAnalyses();
+        setAnalyses(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalyses();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+      </div>
+    );
+  }
+
+  const latest = analyses.length > 0 ? analyses[0] : null;
+  const recommendations = latest?.job_recommendations || [];
+
+  return (
+    <div className="space-y-8">
+      
+      <div className="glass-panel p-8 rounded-3xl space-y-2">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold">
+          <Crosshair className="w-3.5 h-3.5" />
+          <span>Job Role Compatibility Matcher</span>
+        </div>
+        <h1 className="text-3xl font-extrabold text-white">Target Job Role Recommendations</h1>
+        <p className="text-xs text-slate-400">AI-matched target tech roles based on your extracted resume competencies.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {recommendations.map((job, idx) => (
+          <div key={idx} className="glass-card p-6 rounded-3xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">{job.title}</h3>
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-extrabold">
+                {job.match_percentage}% Match Score
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {job.reason}
+            </p>
+
+            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+              <span className="text-slate-400 font-semibold">Recommended Focus:</span>
+              <span className="text-indigo-400 font-bold">High Demand Role</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+};
+
+export default JobMatchPage;
