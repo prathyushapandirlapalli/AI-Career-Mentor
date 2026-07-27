@@ -56,7 +56,7 @@ const ATSMatrixPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl mx-auto pb-16">
       
       <div className="glass-panel p-8 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2">

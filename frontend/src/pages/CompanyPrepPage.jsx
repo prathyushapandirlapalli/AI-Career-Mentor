@@ -11,7 +11,7 @@ const CompanyPrepPage = () => {
   const currentData = companyPrepData[companyKey] || companyPrepData.amazon;
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto pb-16">
       
       {/* 1. Header Banner & Company Selector Tabs */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800/80 shadow-xl">

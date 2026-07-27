@@ -33,7 +33,7 @@ const SkillGapPage = () => {
   const gaps = latest?.skill_gap_analysis || [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl mx-auto pb-16">
       
       <div className="glass-panel p-8 rounded-3xl space-y-2">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold">

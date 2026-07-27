@@ -50,19 +50,19 @@ function App() {
   const isAuthOrLanding = ['/', '/login', '/register'].includes(location.pathname);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300">
+    <div className="w-full h-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300">
       
       {!isAuthOrLanding && (
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       )}
 
-      <div className={`flex flex-1 relative ${!isAuthOrLanding ? 'pt-[72px]' : ''}`}>
+      <div className={`flex flex-1 relative w-full h-full ${!isAuthOrLanding ? 'pt-[72px]' : ''}`}>
         
         {!isAuthOrLanding && (
           <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         )}
 
-        <main className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all ${!isAuthOrLanding ? 'lg:pl-[322px]' : ''}`}>
+        <main className={`flex-1 w-full h-full transition-all ${!isAuthOrLanding ? 'p-4 sm:p-6 lg:p-8 pb-16 sm:pb-20 lg:pb-24 lg:pl-[322px]' : 'p-0 m-0 flex flex-col'}`}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Sun, Moon, Sparkles, LogOut, User as UserIcon, Menu } from 'lucide-react';
+import { Sun, Moon, Sparkles, LogOut, User as UserIcon, Menu, Home } from 'lucide-react';
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user, logout, isAuthenticated, isDemoMode } = useAuth();
@@ -10,6 +10,11 @@ const Navbar = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const handleExitDemo = () => {
     logout();
     navigate('/');
   };
@@ -28,7 +33,7 @@ const Navbar = ({ onToggleSidebar }) => {
             <Menu className="w-5 h-5" />
           </button>
           
-          <Link to={isAuthenticated || isDemoMode ? "/dashboard" : "/"} className="flex items-center space-x-3 group">
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-3 group" title={isAuthenticated ? "Dashboard" : "Home Landing Page"}>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-md shadow-indigo-500/15 group-hover:scale-105 transition-transform shrink-0">
               <div className="w-full h-full bg-white dark:bg-slate-950 rounded-[10px] flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-indigo-600 dark:text-cyan-400 animate-pulse" />
@@ -85,6 +90,30 @@ const Navbar = ({ onToggleSidebar }) => {
               >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+          ) : isDemoMode ? (
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/login"
+                className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 rounded-xl text-xs font-extrabold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-600/20 transition-all"
+              >
+                Create Account
+              </Link>
+              {/* Exit Demo placed directly in the Logout position */}
+              <button
+                onClick={handleExitDemo}
+                className="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all flex items-center space-x-1.5 text-xs font-bold shadow-xs cursor-pointer ml-1"
+                title="Exit Demo Mode & Return to Home Landing Page"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Exit Demo</span>
               </button>
             </div>
           ) : (

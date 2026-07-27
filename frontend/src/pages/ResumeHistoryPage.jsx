@@ -45,32 +45,6 @@ TECHNICAL SKILLS:
 • Frontend: React 18, TypeScript, TailwindCSS, Next.js, Redux Toolkit
 • Backend: Python, FastAPI, Django, Node.js, Express
 • Database & Cloud: PostgreSQL, Redis, Docker, AWS (S3, EC2, Lambda), CI/CD`
-  },
-  {
-    id: 102,
-    resume_id: 2,
-    filename: 'frontend-developer-cv.pdf',
-    target_role: 'Frontend React Engineer',
-    resume_score: 88,
-    ats_score: 91,
-    formatting_score: 85,
-    impact_score: 82,
-    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-    extracted_text: `FRONTEND ENGINEER CANDIDATE
-Specializing in React, TypeScript & Responsive Web UI Architecture`
-  },
-  {
-    id: 103,
-    resume_id: 3,
-    filename: 'backend-python-resume.pdf',
-    target_role: 'Backend Python Developer',
-    resume_score: 82,
-    ats_score: 86,
-    formatting_score: 80,
-    impact_score: 79,
-    created_at: new Date(Date.now() - 86400000 * 7).toISOString(),
-    extracted_text: `BACKEND PYTHON DEVELOPER
-Specializing in FastAPI, AsyncIO & Distributed Microservices Architecture`
   }
 ];
 
@@ -93,6 +67,14 @@ const ResumeHistoryPage = () => {
 
   const { isDemoMode, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const handleViewResume = (item) => {
+    if (isDemoMode) {
+      navigate('/login', { state: { from: '/resume-history' } });
+      return;
+    }
+    setPreviewItem(item);
+  };
 
   // Generate / Fetch Original PDF Blob when previewItem changes
   useEffect(() => {
@@ -256,7 +238,7 @@ startxref
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto pb-16">
       
       {/* 1. Header Banner & Top Action */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -415,12 +397,12 @@ startxref
                       <div className="flex items-center justify-end space-x-2">
                         {/* View Original Resume Button */}
                         <button
-                          onClick={() => setPreviewItem(item)}
+                          onClick={() => handleViewResume(item)}
                           className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-all flex items-center space-x-1.5 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                          title="View Original Uploaded PDF Resume"
+                          title={isDemoMode ? "Sign In to View Original Resume PDF" : "View Original Uploaded PDF Resume"}
                         >
-                          <FileCode className="w-3.5 h-3.5 text-indigo-500" />
-                          <span className="hidden md:inline">View Resume</span>
+                          {isDemoMode ? <Lock className="w-3.5 h-3.5 text-indigo-500" /> : <FileCode className="w-3.5 h-3.5 text-indigo-500" />}
+                          <span className="hidden md:inline">{isDemoMode ? "Sign In to View" : "View Resume"}</span>
                         </button>
 
                         {/* View AI Analysis Button */}

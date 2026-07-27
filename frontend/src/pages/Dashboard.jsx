@@ -58,7 +58,7 @@ const Dashboard = () => {
   const latestAnalysis = analyses.length > 0 ? analyses[0] : (isDemoMode ? DEMO_ANALYSIS : null);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-[1200px] mx-auto pb-10">
       
       {/* Header Banner */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

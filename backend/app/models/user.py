@@ -17,13 +17,13 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     
-    # Profile & Preferences
-    target_role = Column(String(255), nullable=True, default="Senior Full Stack Engineer")
-    location = Column(String(255), nullable=True, default="India")
-    education = Column(String(255), nullable=True, default="Computer Science")
-    experience_level = Column(String(255), nullable=True, default="Entry Level")
-    preferred_job_type = Column(String(255), nullable=True, default="Full Time")
-    preferred_work_mode = Column(String(255), nullable=True, default="Hybrid")
+    # Profile & Preferences (no artificial defaults)
+    target_role = Column(String(255), nullable=True)
+    location = Column(String(255), nullable=True)
+    education = Column(String(255), nullable=True)
+    experience_level = Column(String(255), nullable=True)
+    preferred_job_type = Column(String(255), nullable=True)
+    preferred_work_mode = Column(String(255), nullable=True)
     
     # JSON attributes
     skills_json = Column(Text, nullable=True)
@@ -38,7 +38,7 @@ class User(Base):
                 return json.loads(self.skills_json)
             except Exception:
                 pass
-        return ["React.js", "JavaScript", "HTML", "CSS", "Java", "Python", "Node.js", "Git", "GitHub", "SQL", "Firebase"]
+        return []
 
     def get_interests_list(self):
         if self.career_interests_json:
@@ -46,4 +46,4 @@ class User(Base):
                 return json.loads(self.career_interests_json)
             except Exception:
                 pass
-        return ["Full Stack Development", "Frontend Development", "Software Engineering", "Web Development"]
+        return []

@@ -33,7 +33,7 @@ const JobMatchPage = () => {
   const recommendations = latest?.job_recommendations || [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl mx-auto pb-16">
       
       <div className="glass-panel p-8 rounded-3xl space-y-2">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold">

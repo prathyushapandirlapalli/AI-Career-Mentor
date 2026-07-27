@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { authAPI, resumeAPI } from '../services/api';
@@ -22,28 +23,25 @@ import {
   Globe,
   Award,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  LogIn
 } from 'lucide-react';
 
-const DEFAULT_SKILLS = [
-  'React.js', 'JavaScript', 'HTML', 'CSS', 'Java', 'Python',
-  'Node.js', 'Git', 'GitHub', 'SQL', 'Firebase'
-];
-
-const DEFAULT_INTERESTS = [
-  'Full Stack Development', 'Frontend Development',
-  'Software Engineering', 'Web Development'
-];
-
-const CAREER_INTEREST_OPTIONS = [
-  'Full Stack Development', 'Frontend Development', 'Backend Development',
-  'Software Engineering', 'Web Development', 'Mobile App Development',
-  'DevOps & Cloud', 'Data Science & AI'
+const SUGGESTED_INTERESTS = [
+  'Full Stack Development',
+  'Frontend Development',
+  'Backend Development',
+  'Software Engineering',
+  'Web Development',
+  'Mobile App Development',
+  'DevOps & Cloud',
+  'Data Science & AI'
 ];
 
 const ProfilePage = () => {
   const { user, isDemoMode, updateUser } = useAuth();
   const { isDark, themeMode, setThemeMode } = useTheme();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -52,21 +50,22 @@ const ProfilePage = () => {
 
   // Local state for profile data
   const [profile, setProfile] = useState({
-    full_name: user?.full_name || 'Sai Lokesh',
-    email: user?.email || 'sailokeshgoudk@gmail.com',
-    target_role: user?.target_role || 'Senior Full Stack Engineer',
-    education: user?.education || 'Computer Science',
-    location: user?.location || 'India',
-    experience_level: user?.experience_level || 'Entry Level',
-    preferred_job_type: user?.preferred_job_type || 'Full Time',
-    preferred_work_mode: user?.preferred_work_mode || 'Hybrid',
-    skills: user?.skills || DEFAULT_SKILLS,
-    career_interests: user?.career_interests || DEFAULT_INTERESTS,
+    full_name: user?.full_name || '',
+    email: user?.email || '',
+    target_role: user?.target_role || '',
+    education: user?.education || '',
+    location: user?.location || '',
+    experience_level: user?.experience_level || '',
+    preferred_job_type: user?.preferred_job_type || '',
+    preferred_work_mode: user?.preferred_work_mode || '',
+    skills: user?.skills || [],
+    career_interests: user?.career_interests || [],
   });
 
-  // Form state inside Edit Drawer/Modal
+  // Form state inside Edit Modal
   const [formData, setFormData] = useState({ ...profile });
   const [newSkillInput, setNewSkillInput] = useState('');
+  const [newInterestInput, setNewInterestInput] = useState('');
 
   // Lock body scroll when Edit Profile modal is open
   useEffect(() => {
@@ -80,7 +79,7 @@ const ProfilePage = () => {
     };
   }, [isDrawerOpen]);
 
-  // Fetch full profile from API on mount
+  // Fetch profile from API on mount
   useEffect(() => {
     const loadProfile = async () => {
       if (isDemoMode) return;
@@ -89,16 +88,16 @@ const ProfilePage = () => {
         const res = await authAPI.getMe();
         if (res.data) {
           const loadedData = {
-            full_name: res.data.full_name || 'Sai Lokesh',
-            email: res.data.email || 'sailokeshgoudk@gmail.com',
-            target_role: res.data.target_role || 'Senior Full Stack Engineer',
-            education: res.data.education || 'Computer Science',
-            location: res.data.location || 'India',
-            experience_level: res.data.experience_level || 'Entry Level',
-            preferred_job_type: res.data.preferred_job_type || 'Full Time',
-            preferred_work_mode: res.data.preferred_work_mode || 'Hybrid',
-            skills: res.data.skills?.length ? res.data.skills : DEFAULT_SKILLS,
-            career_interests: res.data.career_interests?.length ? res.data.career_interests : DEFAULT_INTERESTS,
+            full_name: res.data.full_name || '',
+            email: res.data.email || '',
+            target_role: res.data.target_role || '',
+            education: res.data.education || '',
+            location: res.data.location || '',
+            experience_level: res.data.experience_level || '',
+            preferred_job_type: res.data.preferred_job_type || '',
+            preferred_work_mode: res.data.preferred_work_mode || '',
+            skills: res.data.skills || [],
+            career_interests: res.data.career_interests || [],
           };
           setProfile(loadedData);
           setFormData(loadedData);
@@ -114,12 +113,12 @@ const ProfilePage = () => {
 
   // Compute initials
   const initials = useMemo(() => {
-    const name = profile.full_name || 'User';
+    const name = profile.full_name || 'Demo User';
     const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
+    if (parts.length >= 2 && parts[0] && parts[parts.length - 1]) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase();
+    return name.slice(0, 2).toUpperCase() || 'DU';
   }, [profile.full_name]);
 
   // Calculate profile completion percentage & missing suggestion
@@ -146,8 +145,12 @@ const ProfilePage = () => {
     return { completionPercentage: pct, missingSuggestion: suggestion };
   }, [profile]);
 
-  // Open Edit Modal
+  // Handle Edit Action - Redirect to Login if in Demo Mode
   const handleOpenDrawer = () => {
+    if (isDemoMode) {
+      navigate('/login', { state: { from: '/profile' } });
+      return;
+    }
     setFormData({ ...profile });
     setIsDrawerOpen(true);
   };
@@ -173,7 +176,20 @@ const ProfilePage = () => {
     }));
   };
 
-  // Toggle Interest chip
+  // Add Custom Career Interest
+  const handleAddCustomInterest = (e) => {
+    if (e) e.preventDefault();
+    const val = newInterestInput.trim();
+    if (val && !formData.career_interests.includes(val)) {
+      setFormData((prev) => ({
+        ...prev,
+        career_interests: [...prev.career_interests, val],
+      }));
+      setNewInterestInput('');
+    }
+  };
+
+  // Toggle Interest chip (suggested or custom)
   const handleToggleInterest = (interest) => {
     setFormData((prev) => {
       const exists = prev.career_interests.includes(interest);
@@ -193,6 +209,10 @@ const ProfilePage = () => {
 
   // Sync Skills from latest Resume
   const handleSyncSkillsFromResume = async () => {
+    if (isDemoMode) {
+      navigate('/login', { state: { from: '/profile' } });
+      return;
+    }
     try {
       const res = await resumeAPI.getAnalyses();
       if (res.data?.length > 0) {
@@ -204,10 +224,8 @@ const ProfilePage = () => {
           setProfile(updated);
           setFormData(updated);
 
-          if (!isDemoMode) {
-            await authAPI.updateProfile(updated);
-            updateUser(updated);
-          }
+          await authAPI.updateProfile(updated);
+          updateUser(updated);
           setSyncNotice(`Synced ${keywords.length} skills from your latest resume evaluation!`);
           setTimeout(() => setSyncNotice(''), 4000);
         }
@@ -252,8 +270,25 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-[1150px] mx-auto pb-12">
+    <div className="space-y-6 max-w-[1150px] mx-auto pb-16">
       
+      {/* Demo Mode Alert Banner */}
+      {isDemoMode && (
+        <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-semibold">
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>You are viewing the <b>Demo Profile</b>. Sign in to edit your details, add custom skills, and personalize your target role.</span>
+          </div>
+          <button
+            onClick={() => navigate('/login', { state: { from: '/profile' } })}
+            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shrink-0 transition-all cursor-pointer flex items-center space-x-1.5"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Login to Edit Profile</span>
+          </button>
+        </div>
+      )}
+
       {/* 1. Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -293,7 +328,7 @@ const ProfilePage = () => {
           <div className="space-y-1">
             <div className="flex items-center space-x-3">
               <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-                {profile.full_name}
+                {profile.full_name || 'User Profile'}
               </h2>
               
               {/* Profile Strength Badge */}
@@ -304,18 +339,18 @@ const ProfilePage = () => {
             </div>
 
             <p className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
-              {profile.target_role}
+              {profile.target_role || <span className="text-slate-400 font-normal italic">Target role not specified</span>}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 pt-0.5">
               <span className="flex items-center">
                 <GraduationCap className="w-3.5 h-3.5 mr-1 text-slate-400" />
-                {profile.education}
+                {profile.education || 'Education not specified'}
               </span>
               <span>•</span>
               <span className="flex items-center">
                 <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
-                {profile.location}
+                {profile.location || 'Location not specified'}
               </span>
               <span>•</span>
               <span className="flex items-center">
@@ -332,8 +367,8 @@ const ProfilePage = () => {
             onClick={handleOpenDrawer}
             className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center space-x-2 cursor-pointer hover:scale-105"
           >
-            <Edit3 className="w-4 h-4" />
-            <span>Edit Profile</span>
+            {isDemoMode ? <LogIn className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+            <span>{isDemoMode ? 'Login to Edit Profile' : 'Edit Profile'}</span>
           </button>
         </div>
 
@@ -350,7 +385,7 @@ const ProfilePage = () => {
             onClick={handleOpenDrawer}
             className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0 ml-3 cursor-pointer"
           >
-            Complete Now →
+            {isDemoMode ? 'Login Now →' : 'Complete Now →'}
           </button>
         </div>
       )}
@@ -366,22 +401,30 @@ const ProfilePage = () => {
           
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Full Name</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.full_name}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.full_name || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Email Address</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.email}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.email || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Education</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.education}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.education || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Location</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.location}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.location || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
         </div>
@@ -398,22 +441,30 @@ const ProfilePage = () => {
           
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Target Role</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1 truncate">{profile.target_role}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1 truncate">
+              {profile.target_role || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Experience Level</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.experience_level}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.experience_level || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Preferred Job Type</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.preferred_job_type}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.preferred_job_type || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Preferred Work Mode</span>
-            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{profile.preferred_work_mode}</p>
+            <p className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+              {profile.preferred_work_mode || <span className="text-slate-400 font-normal italic">Not specified</span>}
+            </p>
           </div>
 
         </div>
@@ -436,16 +487,20 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-2 pt-1">
-          {profile.skills.map((skill, idx) => (
-            <span
-              key={idx}
-              className="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold text-xs shadow-xs"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
+        {profile.skills?.length > 0 ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {profile.skills.map((skill, idx) => (
+              <span
+                key={idx}
+                className="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold text-xs shadow-xs"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400 italic">No skills added yet. Click Edit Profile to add your skills.</p>
+        )}
       </div>
 
       {/* 6. Career Interests Section */}
@@ -455,16 +510,20 @@ const ProfilePage = () => {
           <span>Career Interests</span>
         </h3>
 
-        <div className="flex flex-wrap gap-2 pt-1">
-          {profile.career_interests.map((interest, idx) => (
-            <span
-              key={idx}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs"
-            >
-              {interest}
-            </span>
-          ))}
-        </div>
+        {profile.career_interests?.length > 0 ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {profile.career_interests.map((interest, idx) => (
+              <span
+                key={idx}
+                className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs"
+              >
+                {interest}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400 italic">No career interests added yet. Click Edit Profile to add your career interests.</p>
+        )}
       </div>
 
       {/* 7. Settings Section (Appearance & System Preferences) */}
@@ -559,6 +618,7 @@ const ProfilePage = () => {
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                     required
+                    placeholder="Enter your full name"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                   />
                 </div>
@@ -580,7 +640,7 @@ const ProfilePage = () => {
                       type="text"
                       value={formData.education}
                       onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                      placeholder="e.g. Computer Science"
+                      placeholder="e.g. B.Tech Computer Science"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                     />
                   </div>
@@ -610,7 +670,6 @@ const ProfilePage = () => {
                     type="text"
                     value={formData.target_role}
                     onChange={(e) => setFormData({ ...formData, target_role: e.target.value })}
-                    required
                     placeholder="e.g. Senior Full Stack Engineer"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                   />
@@ -624,6 +683,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData({ ...formData, experience_level: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                     >
+                      <option value="">Select Level</option>
                       <option value="Entry Level">Entry Level</option>
                       <option value="Mid-Level">Mid-Level</option>
                       <option value="Senior">Senior</option>
@@ -638,6 +698,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData({ ...formData, preferred_job_type: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                     >
+                      <option value="">Select Type</option>
                       <option value="Full Time">Full Time</option>
                       <option value="Part Time">Part Time</option>
                       <option value="Contract">Contract</option>
@@ -652,6 +713,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData({ ...formData, preferred_work_mode: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                     >
+                      <option value="">Select Mode</option>
                       <option value="Remote">Remote</option>
                       <option value="Hybrid">Hybrid</option>
                       <option value="On-site">On-site</option>
@@ -672,7 +734,7 @@ const ProfilePage = () => {
                     value={newSkillInput}
                     onChange={(e) => setNewSkillInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddSkill(e)}
-                    placeholder="Type skill name & click + Add Skill..."
+                    placeholder="Type a skill and click + Add..."
                     className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
                   />
                   <button
@@ -704,30 +766,78 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              {/* Career Interests Chip Selection */}
+              {/* Custom & Suggested Career Interests Input */}
               <div className="space-y-3">
                 <h4 className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 border-b border-slate-200 dark:border-slate-800 pb-1">
                   Career Interests
                 </h4>
 
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {CAREER_INTEREST_OPTIONS.map((interest, idx) => {
-                    const isSelected = formData.career_interests.includes(interest);
-                    return (
-                      <button
-                        type="button"
-                        key={idx}
-                        onClick={() => handleToggleInterest(interest)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700'
-                        }`}
-                      >
-                        {isSelected ? '✓ ' : '+ '} {interest}
-                      </button>
-                    );
-                  })}
+                {/* Add Custom Interest Input */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={newInterestInput}
+                    onChange={(e) => setNewInterestInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCustomInterest(e)}
+                    placeholder="Type custom career interest & click + Add..."
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 font-semibold"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCustomInterest}
+                    className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center space-x-1 shrink-0 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Interest</span>
+                  </button>
+                </div>
+
+                {/* Selected Interests Tags */}
+                {formData.career_interests.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Your Interests:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.career_interests.map((interest, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs"
+                        >
+                          <span>{interest}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleInterest(interest)}
+                            className="hover:text-rose-500 cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Suggested Interest Chips */}
+                <div className="space-y-1 pt-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Quick Suggestions:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {SUGGESTED_INTERESTS.map((interest, idx) => {
+                      const isSelected = formData.career_interests.includes(interest);
+                      return (
+                        <button
+                          type="button"
+                          key={idx}
+                          onClick={() => handleToggleInterest(interest)}
+                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-300'
+                              : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700'
+                          }`}
+                        >
+                          {isSelected ? '✓ ' : '+ '} {interest}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 

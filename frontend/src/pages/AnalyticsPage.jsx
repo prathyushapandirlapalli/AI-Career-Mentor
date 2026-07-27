@@ -33,7 +33,7 @@ const AnalyticsPage = () => {
   const skills = data?.skill_breakdown || [];
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto pb-16">
       
       <div className="glass-panel p-8 rounded-3xl space-y-2">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">

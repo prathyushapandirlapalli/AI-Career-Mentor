@@ -36,7 +36,7 @@ const ResumeUploadPage = () => {
   if (isDemoMode) {
     const sample = latestAnalysis || DEMO_ANALYSIS;
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-8 pb-16">
         
         {/* Banner Header with Sample Data Badge */}
         <div className="glass-panel p-8 rounded-3xl space-y-3 text-center border border-indigo-500/20 shadow-xl relative overflow-hidden">
@@ -220,7 +220,7 @@ const ResumeUploadPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-16">
       
       <div className="glass-panel p-8 rounded-3xl space-y-3 text-center">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">

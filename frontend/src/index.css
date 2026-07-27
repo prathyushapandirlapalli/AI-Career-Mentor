@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     @apply bg-slate-950 text-slate-100 transition-colors duration-300;
@@ -15,6 +27,57 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
   }
+}
+
+/* GLOBAL RULE: ALL solid primary action buttons across ALL pages MUST have pure white text & icons in both Light and Dark mode */
+button[class*="bg-indigo"],
+button[class*="bg-purple"],
+button[class*="bg-cyan"],
+button[class*="bg-emerald"],
+button[class*="bg-blue"],
+button[class*="bg-gradient"],
+a[class*="bg-indigo"],
+a[class*="bg-purple"],
+a[class*="bg-cyan"],
+a[class*="bg-emerald"],
+a[class*="bg-blue"],
+a[class*="bg-gradient"],
+.btn-primary {
+  color: #ffffff !important;
+}
+
+button[class*="bg-indigo"] *,
+button[class*="bg-purple"] *,
+button[class*="bg-cyan"] *,
+button[class*="bg-emerald"] *,
+button[class*="bg-blue"] *,
+button[class*="bg-gradient"] *,
+a[class*="bg-indigo"] *,
+a[class*="bg-purple"] *,
+a[class*="bg-cyan"] *,
+a[class*="bg-emerald"] *,
+a[class*="bg-blue"] *,
+a[class*="bg-gradient"] *,
+.btn-primary * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+button[class*="bg-indigo"] svg,
+button[class*="bg-purple"] svg,
+button[class*="bg-cyan"] svg,
+button[class*="bg-emerald"] svg,
+button[class*="bg-blue"] svg,
+button[class*="bg-gradient"] svg,
+a[class*="bg-indigo"] svg,
+a[class*="bg-purple"] svg,
+a[class*="bg-cyan"] svg,
+a[class*="bg-emerald"] svg,
+a[class*="bg-blue"] svg,
+a[class*="bg-gradient"] svg,
+.btn-primary svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 /* Light & Dark root color schemes */
@@ -76,7 +139,7 @@ html.light .glass-card:hover {
 
 /* Global Light Mode Contrast Fixes */
 html.light .text-white {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 html.light .text-slate-100,

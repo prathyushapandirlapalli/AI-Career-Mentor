@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     full_name: str
     password: str
-    target_role: Optional[str] = "Software Engineer"
+    target_role: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -35,12 +35,12 @@ class UserResponse(BaseModel):
     id: int
     email: str
     full_name: str
-    target_role: Optional[str] = "Senior Full Stack Engineer"
-    location: Optional[str] = "India"
-    education: Optional[str] = "Computer Science"
-    experience_level: Optional[str] = "Entry Level"
-    preferred_job_type: Optional[str] = "Full Time"
-    preferred_work_mode: Optional[str] = "Hybrid"
+    target_role: Optional[str] = None
+    location: Optional[str] = None
+    education: Optional[str] = None
+    experience_level: Optional[str] = None
+    preferred_job_type: Optional[str] = None
+    preferred_work_mode: Optional[str] = None
     skills: Optional[List[str]] = None
     career_interests: Optional[List[str]] = None
     is_active: bool
