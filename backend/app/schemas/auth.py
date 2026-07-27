@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, ConfigDict
 
 
@@ -17,12 +17,32 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserProfileUpdate(BaseModel):
+    """Schema for profile update request payload."""
+    full_name: Optional[str] = None
+    location: Optional[str] = None
+    education: Optional[str] = None
+    target_role: Optional[str] = None
+    experience_level: Optional[str] = None
+    preferred_job_type: Optional[str] = None
+    preferred_work_mode: Optional[str] = None
+    skills: Optional[List[str]] = None
+    career_interests: Optional[List[str]] = None
+
+
 class UserResponse(BaseModel):
     """Schema for public user profile output."""
     id: int
     email: str
     full_name: str
-    target_role: Optional[str] = None
+    target_role: Optional[str] = "Senior Full Stack Engineer"
+    location: Optional[str] = "India"
+    education: Optional[str] = "Computer Science"
+    experience_level: Optional[str] = "Entry Level"
+    preferred_job_type: Optional[str] = "Full Time"
+    preferred_work_mode: Optional[str] = "Hybrid"
+    skills: Optional[List[str]] = None
+    career_interests: Optional[List[str]] = None
     is_active: bool
     created_at: datetime
 

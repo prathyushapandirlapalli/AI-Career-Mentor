@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { resumeAPI } from '../services/api';
-import { FileDown, Sparkles, CheckCircle2, FileText, Loader2 } from 'lucide-react';
+import { FileDown, Sparkles, CheckCircle2, FileText, Loader2, ArrowRight } from 'lucide-react';
 
 const WeeklyReportPage = () => {
   const [analyses, setAnalyses] = useState([]);
@@ -56,10 +57,23 @@ const WeeklyReportPage = () => {
           <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
         </div>
       ) : analyses.length === 0 ? (
-        <div className="glass-panel p-8 rounded-3xl text-center space-y-2">
-          <FileText className="w-10 h-10 text-slate-500 mx-auto" />
-          <h2 className="text-base font-bold text-white">No PDF Reports Available</h2>
-          <p className="text-xs text-slate-400">Upload a resume to generate your first downloadable PDF Report.</p>
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl text-center space-y-4 max-w-xl mx-auto border border-dashed border-slate-300 dark:border-slate-800">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-md">
+            <FileDown className="w-8 h-8" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">No PDF Reports Available</h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Upload your PDF resume to generate and download formatted PDF Career Reports.
+            </p>
+          </div>
+          <Link
+            to="/resume-upload"
+            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all hover:scale-105"
+          >
+            <span>Upload PDF Resume</span>
+            <ArrowRight className="w-4 h-4 ml-1" />
+          </Link>
         </div>
       ) : (
         <div className="space-y-4">

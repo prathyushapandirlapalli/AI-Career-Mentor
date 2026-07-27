@@ -179,3 +179,55 @@ def generate_career_report_pdf(user_name: str, user_email: str, target_role: str
     pdf_bytes = buffer.getvalue()
     buffer.close()
     return pdf_bytes
+
+
+def generate_original_resume_pdf(filename: str, extracted_text: str) -> bytes:
+    """
+    Generates a clean PDF document containing the exact text of the user's uploaded resume.
+    """
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'ResumeTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        leading=22,
+        textColor=colors.HexColor("#1E293B"),
+        fontName='Helvetica-Bold',
+        spaceAfter=12
+    )
+
+    text_style = ParagraphStyle(
+        'ResumeBody',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor("#0F172A"),
+        fontName='Helvetica'
+    )
+
+    elements = []
+    elements.append(Paragraph(f"UPLOADED RESUME: {filename.upper()}", title_style))
+    elements.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#CBD5E1"), spaceAfter=15))
+
+    # Format text paragraphs
+    paragraphs = extracted_text.split("\n\n")
+    for para in paragraphs:
+        cleaned_para = para.strip().replace("\n", "<br/>")
+        if cleaned_para:
+            elements.append(Paragraph(cleaned_para, text_style))
+            elements.append(Spacer(1, 8))
+
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes

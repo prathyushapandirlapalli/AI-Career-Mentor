@@ -9,7 +9,7 @@ from app.models.resume import Resume, ResumeAnalysis
 from app.schemas.resume import ResumeAnalysisResponse, ResumeListItem
 from app.services.pdf_service import extract_text_from_pdf_bytes, PDFExtractionError
 from app.services.gemini_service import gemini_service
-from app.services.report_generator import generate_career_report_pdf
+from app.services.report_generator import generate_career_report_pdf, generate_original_resume_pdf
 
 router = APIRouter()
 
@@ -45,11 +45,12 @@ async def upload_and_analyze_resume(
     except PDFExtractionError as e:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
 
-    # 2. Persist raw Resume record
+    # 2. Persist raw Resume record with exact binary PDF bytes
     db_resume = Resume(
         user_id=current_user.id,
         filename=file.filename,
         file_size_bytes=len(contents),
+        file_bytes=contents,
         extracted_text=extracted_text
     )
     db.add(db_resume)
@@ -149,4 +150,82 @@ def download_resume_report_pdf(
         content=pdf_bytes,
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.delete("/analysis/{analysis_id}", status_code=status.HTTP_200_OK)
+def delete_resume_analysis(
+    analysis_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Permanently delete specific AI resume analysis and its raw resume record,
+    scoped strictly to the current authenticated user.
+    """
+    record = db.query(ResumeAnalysis).filter(
+        ResumeAnalysis.id == analysis_id,
+        ResumeAnalysis.user_id == current_user.id
+    ).first()
+
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Analysis report not found or access denied."
+        )
+
+    resume_id = record.resume_id
+
+    # 1. Delete analysis record
+    db.delete(record)
+
+    # 2. Delete parent resume record if exists
+    if resume_id:
+        resume_record = db.query(Resume).filter(
+            Resume.id == resume_id,
+            Resume.user_id == current_user.id
+        ).first()
+        if resume_record:
+            db.delete(resume_record)
+
+    db.commit()
+
+    return {"message": "Resume analysis deleted successfully", "id": analysis_id}
+
+
+@router.get("/analysis/{analysis_id}/original-pdf")
+def get_original_resume_pdf(
+    analysis_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Streams the user's exact original uploaded PDF file binary.
+    """
+    record = db.query(ResumeAnalysis).filter(
+        ResumeAnalysis.id == analysis_id,
+        ResumeAnalysis.user_id == current_user.id
+    ).first()
+
+    if not record or not record.resume:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Resume record not found."
+        )
+
+    if not record.resume.file_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Original PDF file is unavailable for this historical record. Please upload this resume again."
+        )
+
+    filename = record.resume.filename or f"uploaded_resume_{analysis_id}.pdf"
+
+    return Response(
+        content=record.resume.file_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "no-cache"
+        }
     )

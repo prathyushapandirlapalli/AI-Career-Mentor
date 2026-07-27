@@ -80,9 +80,66 @@ def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
     )
 
 
+import json
+from app.schemas.auth import UserCreate, UserLogin, UserResponse, UserProfileUpdate, Token
+
+def format_user_response(user: User) -> dict:
+    """Helper method to construct complete dict payload for UserResponse."""
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "target_role": user.target_role or "Senior Full Stack Engineer",
+        "location": user.location or "India",
+        "education": user.education or "Computer Science",
+        "experience_level": user.experience_level or "Entry Level",
+        "preferred_job_type": user.preferred_job_type or "Full Time",
+        "preferred_work_mode": user.preferred_work_mode or "Hybrid",
+        "skills": user.get_skills_list(),
+        "career_interests": user.get_interests_list(),
+        "is_active": user.is_active,
+        "created_at": user.created_at
+    }
+
+
 @router.get("/me", response_model=UserResponse)
 def get_current_user_profile(current_user: User = Depends(get_current_user)):
     """
     Retrieve authenticated user's profile info.
     """
-    return current_user
+    return format_user_response(current_user)
+
+
+@router.put("/me", response_model=UserResponse)
+def update_user_profile(
+    profile_in: UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Update authenticated user's profile metadata and preferences.
+    """
+    if profile_in.full_name is not None:
+        current_user.full_name = profile_in.full_name
+    if profile_in.location is not None:
+        current_user.location = profile_in.location
+    if profile_in.education is not None:
+        current_user.education = profile_in.education
+    if profile_in.target_role is not None:
+        current_user.target_role = profile_in.target_role
+    if profile_in.experience_level is not None:
+        current_user.experience_level = profile_in.experience_level
+    if profile_in.preferred_job_type is not None:
+        current_user.preferred_job_type = profile_in.preferred_job_type
+    if profile_in.preferred_work_mode is not None:
+        current_user.preferred_work_mode = profile_in.preferred_work_mode
+
+    if profile_in.skills is not None:
+        current_user.skills_json = json.dumps(profile_in.skills)
+    if profile_in.career_interests is not None:
+        current_user.career_interests_json = json.dumps(profile_in.career_interests)
+
+    db.commit()
+    db.refresh(current_user)
+
+    return format_user_response(current_user)

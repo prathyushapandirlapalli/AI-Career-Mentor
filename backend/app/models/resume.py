@@ -1,6 +1,6 @@
 import datetime
 import json
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float, LargeBinary
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -8,6 +8,7 @@ from app.core.database import Base
 class Resume(Base):
     """
     SQLAlchemy Model representing uploaded PDF Resumes.
+    Stores both the raw binary PDF file bytes and extracted text for AI analysis.
     """
     __tablename__ = "resumes"
 
@@ -15,6 +16,7 @@ class Resume(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     filename = Column(String(255), nullable=False)
     file_size_bytes = Column(Integer, nullable=False, default=0)
+    file_bytes = Column(LargeBinary, nullable=True)  # Raw binary PDF bytes of original uploaded file
     extracted_text = Column(Text, nullable=False)
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -65,6 +67,8 @@ class ResumeAnalysis(Base):
             "id": self.id,
             "resume_id": self.resume_id,
             "user_id": self.user_id,
+            "filename": self.resume.filename if self.resume else f"resume_{self.id}.pdf",
+            "extracted_text": self.resume.extracted_text if self.resume else "",
             "target_role": self.target_role,
             "resume_score": self.resume_score,
             "ats_score": self.ats_score,

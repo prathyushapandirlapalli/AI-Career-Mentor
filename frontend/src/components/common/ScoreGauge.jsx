@@ -26,7 +26,7 @@ const ScoreGauge = ({ score = 0, title = "Score", size = "normal" }) => {
             r={radius}
             stroke="currentColor"
             strokeWidth={strokeWidth}
-            className="text-slate-800/80"
+            className="text-slate-200 dark:text-slate-800/80"
             fill="transparent"
           />
           {/* Animated Value Arc */}
@@ -44,14 +44,14 @@ const ScoreGauge = ({ score = 0, title = "Score", size = "normal" }) => {
           />
         </svg>
         <div className="absolute flex flex-col items-center justify-center">
-          <span className={`font-extrabold text-slate-100 ${size === "small" ? "text-lg" : "text-2xl"}`}>
+          <span className={`font-extrabold text-slate-900 dark:text-slate-100 ${size === "small" ? "text-lg" : "text-2xl"}`}>
             {normalizedScore}
           </span>
-          <span className="text-[10px] uppercase font-bold text-slate-400">/ 100</span>
+          <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">/ 100</span>
         </div>
       </div>
       {title && (
-        <span className="mt-2 text-xs font-semibold text-slate-300 text-center">
+        <span className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">
           {title}
         </span>
       )}

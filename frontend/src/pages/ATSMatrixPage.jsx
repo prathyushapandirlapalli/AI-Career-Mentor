@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { resumeAPI } from '../services/api';
 import ScoreGauge from '../components/common/ScoreGauge';
-import { Target, CheckCircle2, XCircle, Search, AlertCircle, Loader2 } from 'lucide-react';
+import { Target, CheckCircle2, XCircle, Search, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
 
 const ATSMatrixPage = () => {
   const [analyses, setAnalyses] = useState([]);
@@ -33,10 +34,23 @@ const ATSMatrixPage = () => {
 
   if (!latest) {
     return (
-      <div className="glass-panel p-8 rounded-3xl text-center space-y-4">
-        <AlertCircle className="w-10 h-10 text-amber-400 mx-auto" />
-        <h2 className="text-lg font-bold text-white">No ATS Analysis Found</h2>
-        <p className="text-xs text-slate-400">Please upload your resume to view ATS Keyword Breakdown.</p>
+      <div className="glass-panel p-8 sm:p-12 rounded-3xl text-center space-y-4 max-w-xl mx-auto border border-dashed border-slate-300 dark:border-slate-800">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400 flex items-center justify-center mx-auto shadow-md">
+          <Target className="w-8 h-8" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">No ATS Analysis Found</h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            Please upload your PDF resume to extract key competencies and view your ATS Keyword Match Breakdown.
+          </p>
+        </div>
+        <Link
+          to="/resume-upload"
+          className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all hover:scale-105"
+        >
+          <span>Upload PDF Resume</span>
+          <ArrowRight className="w-4 h-4 ml-1" />
+        </Link>
       </div>
     );
   }

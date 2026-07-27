@@ -138,7 +138,7 @@ const MockInterviewPage = () => {
 
           {/* Question List */}
           <div className="space-y-6">
-            {session.questions.map((q, idx) => {
+            {(session.questions || []).map((q, idx) => {
               const qId = q.id || idx + 1;
               return (
                 <div key={qId} className="glass-card p-6 rounded-3xl space-y-4">

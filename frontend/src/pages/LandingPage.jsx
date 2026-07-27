@@ -1,8 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Sparkles, ArrowRight, ShieldCheck, Cpu, FileCheck, Target, Video, Calendar, Award, CheckCircle } from 'lucide-react';
 
 const LandingPage = () => {
+  const { isAuthenticated, enterDemoMode } = useAuth();
+  const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
       
@@ -56,12 +63,16 @@ const LandingPage = () => {
             <span>Analyze Resume Now</span>
             <ArrowRight className="w-5 h-5" />
           </Link>
-          <Link
-            to="/login"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold text-slate-300 bg-slate-900/80 border border-slate-800 hover:bg-slate-800 hover:text-white transition-all"
+          <button
+            onClick={() => {
+              enterDemoMode();
+              navigate('/dashboard');
+            }}
+            className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-semibold text-slate-300 bg-slate-900/80 border border-slate-800 hover:bg-slate-800 hover:text-white transition-all flex items-center justify-center space-x-2 group cursor-pointer"
           >
-            Explore Dashboard Demo
-          </Link>
+            <Sparkles className="w-4 h-4 text-cyan-400 group-hover:rotate-12 transition-transform" />
+            <span>Explore Dashboard Demo</span>
+          </button>
         </div>
       </section>
 

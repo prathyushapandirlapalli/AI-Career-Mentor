@@ -28,6 +28,8 @@ class ResumeAnalysisResponse(BaseModel):
     id: int
     resume_id: int
     user_id: int
+    filename: Optional[str] = "resume.pdf"
+    extracted_text: Optional[str] = ""
     target_role: str
     resume_score: int
     ats_score: int
