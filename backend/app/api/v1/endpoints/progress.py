@@ -62,16 +62,19 @@ def get_progress_dashboard(
     if completion_percentage > 0:
         readiness_components.append(completion_percentage * 0.3)
 
-    overall_readiness_score = int(sum(readiness_components)) if readiness_components else 65
+    overall_readiness_score = int(sum(readiness_components)) if readiness_components else 0
 
-    # Simulated radar skill breakdown metrics
-    skill_breakdown = [
-        {"skill": "Technical Knowledge", "score": min(95, max(60, latest_resume_score))},
-        {"skill": "ATS Keyword Optimization", "score": min(95, max(55, latest_ats_score))},
-        {"skill": "Interview Practice", "score": min(95, max(50, avg_interview_score if avg_interview_score > 0 else 60))},
-        {"skill": "Consistency & Study", "score": min(95, max(40, int(completion_percentage if completion_percentage > 0 else 50)))},
-        {"skill": "System Architecture", "score": 75}
-    ]
+    # Skill breakdown: Only generate if user has completed at least 1 evaluation or study task
+    if latest_resume_score == 0 and avg_interview_score == 0 and completion_percentage == 0:
+        skill_breakdown = []
+    else:
+        skill_breakdown = [
+            {"skill": "Technical Knowledge", "score": latest_resume_score},
+            {"skill": "ATS Keyword Optimization", "score": latest_ats_score},
+            {"skill": "Interview Practice", "score": avg_interview_score},
+            {"skill": "Consistency & Study", "score": int(completion_percentage)},
+            {"skill": "System Architecture", "score": int((latest_resume_score + avg_interview_score) / 2) if (latest_resume_score or avg_interview_score) else 0}
+        ]
 
     return ProgressDashboardResponse(
         overall_readiness_score=overall_readiness_score,
@@ -82,6 +85,6 @@ def get_progress_dashboard(
         total_study_tasks=total_tasks,
         completed_study_tasks=completed_tasks,
         completion_percentage=completion_percentage,
-        study_streak_days=completed_tasks if completed_tasks > 0 else 1,
+        study_streak_days=completed_tasks if completed_tasks > 0 else 0,
         skill_breakdown=skill_breakdown
     )

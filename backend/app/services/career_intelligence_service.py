@@ -407,58 +407,166 @@ Return VALID JSON ONLY:
         }
 
     def _fallback_study_plan(self, target_role: str) -> List[Dict[str, Any]]:
-        return [
-            {
-                "day_number": 1,
-                "title": "Data Structures - Arrays & Strings Masterclass",
-                "description": "Solve Two Sum, Sliding Window Maximum, and Valid Anagram. Understand O(1) space complexity tricks.",
-                "category": "Data Structures",
-                "resource_name": "GeeksforGeeks Array Track",
-                "resource_url": "https://www.geeksforgeeks.org/array-data-structure/",
-                "is_free": True,
-                "duration_minutes": 60
-            },
-            {
-                "day_number": 2,
-                "title": "Relational Databases & Advanced SQL Queries",
-                "description": "Master INNER JOIN, LEFT JOIN, GROUP BY, and Indexing optimizations in MySQL/PostgreSQL.",
-                "category": "Database",
-                "resource_name": "SQLZoo / Mode Analytics SQL Tutorial",
-                "resource_url": "https://sqlzoo.net/",
-                "is_free": True,
-                "duration_minutes": 60
-            },
-            {
-                "day_number": 3,
-                "title": "REST API Architecture & Authentication",
-                "description": "Build secure JWT authentication, input validation with Pydantic, and error handling in FastAPI.",
-                "category": "Backend",
-                "resource_name": "FastAPI Official Documentation",
-                "resource_url": "https://fastapi.tiangolo.com/",
-                "is_free": True,
-                "duration_minutes": 75
-            },
-            {
-                "day_number": 4,
-                "title": "React Core & Custom Hooks Mastery",
-                "description": "Build custom hooks for data fetching, state management with Context API, and form handling.",
-                "category": "Frontend",
-                "resource_name": "React Official Docs & freeCodeCamp",
-                "resource_url": "https://react.dev/",
-                "is_free": True,
-                "duration_minutes": 60
-            },
-            {
-                "day_number": 5,
-                "title": "System Design Fundamentals - Caching & Load Balancing",
-                "description": "Learn Redis caching strategies (Cache-Aside, Write-Through) and Nginx reverse proxy load balancing.",
-                "category": "System Design",
-                "resource_name": "System Design Primer GitHub",
-                "resource_url": "https://github.com/donnemartin/system-design-primer",
-                "is_free": True,
-                "duration_minutes": 90
-            }
-        ]
+        role_lower = target_role.lower()
+        if "frontend" in role_lower or "react" in role_lower:
+            return [
+                {
+                    "day_number": 1,
+                    "title": "React 18 Concurrent Rendering & Fiber Architecture",
+                    "description": "Deep dive into automatic batching, useTransition, useDeferredValue, and React Fiber reconciliation.",
+                    "category": "Frontend",
+                    "resource_name": "React Official Docs",
+                    "resource_url": "https://react.dev/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 2,
+                    "title": "TypeScript Advanced Types & Generics",
+                    "description": "Master mapped types, conditional types, infer keyword, and utility types (Record, Pick, Omit).",
+                    "category": "Frontend",
+                    "resource_name": "TypeScript Handbook",
+                    "resource_url": "https://www.typescriptlang.org/docs/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 3,
+                    "title": "Web Performance & Core Web Vitals Optimization",
+                    "description": "Optimize LCP, FID/INP, and CLS metrics. Code splitting, lazy loading, and image optimization.",
+                    "category": "Performance",
+                    "resource_name": "web.dev by Google",
+                    "resource_url": "https://web.dev/explore/metrics",
+                    "is_free": True,
+                    "duration_minutes": 75
+                },
+                {
+                    "day_number": 4,
+                    "title": "State Management Architecture (Zustand & Redux Toolkit)",
+                    "description": "Compare atomic state vs global stores. Implement normalized state slices and async thunks.",
+                    "category": "State Management",
+                    "resource_name": "Redux Toolkit Docs",
+                    "resource_url": "https://redux-toolkit.js.org/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 5,
+                    "title": "CSS Grid, Flexbox & Component Design Systems",
+                    "description": "Build accessible UI components using TailwindCSS and RADIX primitives with responsive layouts.",
+                    "category": "UI Architecture",
+                    "resource_name": "TailwindCSS Documentation",
+                    "resource_url": "https://tailwindcss.com/docs",
+                    "is_free": True,
+                    "duration_minutes": 60
+                }
+            ]
+        elif "backend" in role_lower or "python" in role_lower:
+            return [
+                {
+                    "day_number": 1,
+                    "title": "FastAPI AsyncIO & Event Loop Architecture",
+                    "description": "Master non-blocking async/await handlers, worker threads, and event loops in Python.",
+                    "category": "Backend",
+                    "resource_name": "FastAPI Documentation",
+                    "resource_url": "https://fastapi.tiangolo.com/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 2,
+                    "title": "PostgreSQL Query Optimization & Indexing",
+                    "description": "Analyze EXPLAIN ANALYZE execution plans, B-Tree vs Hash indexes, and connection pooling.",
+                    "category": "Database",
+                    "resource_name": "PostgreSQL Official Documentation",
+                    "resource_url": "https://www.postgresql.org/docs/",
+                    "is_free": True,
+                    "duration_minutes": 75
+                },
+                {
+                    "day_number": 3,
+                    "title": "Redis In-Memory Caching & Pub/Sub Patterns",
+                    "description": "Implement cache-aside strategy, TTL expiration policies, and distributed locking.",
+                    "category": "Caching",
+                    "resource_name": "Redis Developer Hub",
+                    "resource_url": "https://redis.io/docs/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 4,
+                    "title": "JWT Auth, OAuth2 & Middleware Security",
+                    "description": "Configure Bearer tokens, token refresh rotation, password hashing with bcrypt, and CORS.",
+                    "category": "Security",
+                    "resource_name": "OWASP API Security Guide",
+                    "resource_url": "https://owasp.org/www-project-api-security/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 5,
+                    "title": "Docker Multi-Stage Builds & Production Setup",
+                    "description": "Write lean production Dockerfiles, configure Uvicorn workers, and manage environment secrets.",
+                    "category": "DevOps",
+                    "resource_name": "Docker Official Guide",
+                    "resource_url": "https://docs.docker.com/",
+                    "is_free": True,
+                    "duration_minutes": 90
+                }
+            ]
+        else:
+            return [
+                {
+                    "day_number": 1,
+                    "title": f"{target_role}: Data Structures - Arrays & Strings Masterclass",
+                    "description": "Solve Two Sum, Sliding Window Maximum, and Valid Anagram. Understand O(1) space complexity tricks.",
+                    "category": "Data Structures",
+                    "resource_name": "GeeksforGeeks Array Track",
+                    "resource_url": "https://www.geeksforgeeks.org/array-data-structure/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 2,
+                    "title": f"{target_role}: Relational Databases & Advanced SQL Queries",
+                    "description": "Master INNER JOIN, LEFT JOIN, GROUP BY, and Indexing optimizations in MySQL/PostgreSQL.",
+                    "category": "Database",
+                    "resource_name": "SQLZoo / Mode Analytics SQL Tutorial",
+                    "resource_url": "https://sqlzoo.net/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 3,
+                    "title": f"{target_role}: REST API Architecture & Microservices",
+                    "description": "Build secure API endpoints, input validation schemas, and error handling for high throughput.",
+                    "category": "Backend",
+                    "resource_name": "REST API Architecture Guide",
+                    "resource_url": "https://restfulapi.net/",
+                    "is_free": True,
+                    "duration_minutes": 75
+                },
+                {
+                    "day_number": 4,
+                    "title": f"{target_role}: Component Architecture & State Management",
+                    "description": "Build modular components, clean state isolation, and performant data pipelines.",
+                    "category": "Architecture",
+                    "resource_name": "freeCodeCamp Computer Science Track",
+                    "resource_url": "https://www.freecodecamp.org/",
+                    "is_free": True,
+                    "duration_minutes": 60
+                },
+                {
+                    "day_number": 5,
+                    "title": f"{target_role}: System Design - Distributed Caching & Scaling",
+                    "description": "Learn Redis caching strategies, load balancing, and horizontal database sharding.",
+                    "category": "System Design",
+                    "resource_name": "System Design Primer GitHub",
+                    "resource_url": "https://github.com/donnemartin/system-design-primer",
+                    "is_free": True,
+                    "duration_minutes": 90
+                }
+            ]
 
 
 career_intelligence_service = CareerIntelligenceService()

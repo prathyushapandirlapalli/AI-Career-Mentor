@@ -21,6 +21,10 @@ def generate_study_planner(
     Generate an AI-driven 30/60/90 days daily study planner curriculum with recommended free & paid learning resources.
     Clears old incomplete default tasks and replaces with new personalized curriculum.
     """
+    # Clear old tasks for this user so regeneration replaces the previous curriculum
+    db.query(StudyTask).filter(StudyTask.user_id == current_user.id).delete()
+    db.commit()
+
     target_role = req.target_role or current_user.target_role or "Software Engineer"
     timeline_days = req.timeline_days or 30
 
@@ -60,11 +64,6 @@ def get_user_study_tasks(
     """
     tasks = db.query(StudyTask).filter(StudyTask.user_id == current_user.id).order_by(StudyTask.day_number.asc()).all()
     
-    # If user has no tasks yet, auto generate default 5-day plan
-    if not tasks:
-        req = GeneratePlannerRequest(target_role=current_user.target_role, timeline_days=30)
-        return generate_study_planner(req, db, current_user)
-
     return [StudyTaskResponse.model_validate(t.get_parsed_data()) for t in tasks]
 
 

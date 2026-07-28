@@ -76,7 +76,7 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center space-x-4 bg-slate-100 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shrink-0">
-          <ScoreGauge score={metrics?.overall_readiness_score || 78} title="Career Readiness" size="small" />
+          <ScoreGauge score={isDemoMode ? 78 : (metrics?.overall_readiness_score ?? 0)} title="Career Readiness" size="small" />
         </div>
       </div>
 
@@ -89,7 +89,7 @@ const Dashboard = () => {
               {isDemoMode ? "Sample Resume Score" : "Latest Resume Score"}
             </span>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics?.latest_resume_score || (latestAnalysis ? latestAnalysis.resume_score : 0)}/100
+              {isDemoMode ? "88/100" : `${metrics?.latest_resume_score ?? (latestAnalysis ? latestAnalysis.resume_score : 0)}/100`}
             </div>
             <span className="text-[10px] text-emerald-500 dark:text-emerald-400 font-semibold flex items-center mt-1">
               <CheckCircle2 className="w-3 h-3 mr-1" /> {isDemoMode ? "Sample Evaluation" : "PDF Parsed & Evaluated"}
@@ -106,7 +106,7 @@ const Dashboard = () => {
               {isDemoMode ? "Sample ATS Match" : "ATS Match Rate"}
             </span>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics?.latest_ats_score || (latestAnalysis ? latestAnalysis.ats_score : 0)}%
+              {isDemoMode ? "92%" : `${metrics?.latest_ats_score ?? (latestAnalysis ? latestAnalysis.ats_score : 0)}%`}
             </div>
             <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-semibold flex items-center mt-1">
               <Target className="w-3 h-3 mr-1" /> Target Job Alignment
@@ -121,10 +121,10 @@ const Dashboard = () => {
           <div>
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Mock Interviews</span>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics?.mock_interviews_completed || 2} Sessions
+              {isDemoMode ? "2 Sessions" : `${metrics?.mock_interviews_completed ?? 0} Sessions`}
             </div>
             <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold flex items-center mt-1">
-              Avg Score: {metrics?.average_interview_score || 84}%
+              Avg Score: {isDemoMode ? "84%" : `${metrics?.average_interview_score ?? 0}%`}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
@@ -136,10 +136,10 @@ const Dashboard = () => {
           <div>
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Study Task Progress</span>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              {metrics?.completed_study_tasks || 12} / {metrics?.total_study_tasks || 15}
+              {isDemoMode ? "12 / 15" : `${metrics?.completed_study_tasks ?? 0} / ${metrics?.total_study_tasks ?? 0}`}
             </div>
             <span className="text-[10px] text-amber-500 font-semibold flex items-center mt-1">
-              {metrics?.completion_percentage || 80}% Completed
+              {isDemoMode ? "80%" : `${metrics?.completion_percentage ?? 0}%`} Completed
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">

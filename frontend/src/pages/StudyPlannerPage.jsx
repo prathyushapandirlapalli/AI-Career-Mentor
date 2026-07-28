@@ -128,14 +128,16 @@ const StudyPlannerPage = () => {
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Structured daily topics, free & paid learning resources, and progress tracking.</p>
         </div>
 
-        <button
-          onClick={handleRegeneratePlan}
-          disabled={generating}
-          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-2 disabled:opacity-50 shrink-0 cursor-pointer"
-        >
-          {generating ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : isDemoMode ? <Lock className="w-4 h-4 text-white" /> : <Sparkles className="w-4 h-4 text-white" />}
-          <span className="text-white">{isDemoMode ? "Sign In to Custom Plan" : "Regenerate 30-Day Plan"}</span>
-        </button>
+        {tasks.length > 0 && (
+          <button
+            onClick={handleRegeneratePlan}
+            disabled={generating}
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center space-x-2 disabled:opacity-50 shrink-0 cursor-pointer"
+          >
+            {generating ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : isDemoMode ? <Lock className="w-4 h-4 text-white" /> : <Sparkles className="w-4 h-4 text-white" />}
+            <span className="text-white">{isDemoMode ? "Sign In to Custom Plan" : "Regenerate 30-Day Plan"}</span>
+          </button>
+        )}
       </div>
 
       {/* Demo Mode Alert Banner */}
@@ -160,24 +162,46 @@ const StudyPlannerPage = () => {
         </div>
       )}
 
-      {/* Progress Bar */}
-      <div className="glass-panel p-6 rounded-3xl space-y-3 border border-slate-200 dark:border-slate-800 shadow-xl">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="text-slate-900 dark:text-white">Overall Plan Completion</span>
-          <span className="text-indigo-600 dark:text-indigo-400">{completedCount} of {tasks.length} Tasks ({progressPercent}%)</span>
+      {/* Progress Bar (Only when plan is generated) */}
+      {tasks.length > 0 && (
+        <div className="glass-panel p-6 rounded-3xl space-y-3 border border-slate-200 dark:border-slate-800 shadow-xl">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-slate-900 dark:text-white">Overall Plan Completion</span>
+            <span className="text-indigo-600 dark:text-indigo-400">{completedCount} of {tasks.length} Tasks ({progressPercent}%)</span>
+          </div>
+          <div className="w-full h-3 bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
+            <div
+              className="h-full bg-gradient-to-r from-indigo-600 to-cyan-500 transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
-        <div className="w-full h-3 bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
-          <div
-            className="h-full bg-gradient-to-r from-indigo-600 to-cyan-500 transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
+      )}
 
-      {/* Daily Task Cards */}
+      {/* Daily Task Cards / Empty State */}
       {loading ? (
         <div className="flex items-center justify-center min-h-[300px]">
           <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        </div>
+      ) : tasks.length === 0 ? (
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl text-center space-y-4 max-w-xl mx-auto border border-dashed border-slate-300 dark:border-slate-800 shadow-lg">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-md">
+            <Calendar className="w-8 h-8" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">No Study Curriculum Generated</h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Generate a personalized 30-day learning curriculum tailored to your target job role.
+            </p>
+          </div>
+          <button
+            onClick={handleRegeneratePlan}
+            disabled={generating}
+            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+          >
+            {generating ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Sparkles className="w-4 h-4 text-white" />}
+            <span>Generate 30-Day Plan</span>
+          </button>
         </div>
       ) : (
         <div className="space-y-4">
